@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="pt-br" ng-app="solicitaCotacao"> 
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <title>Solicitar Cotação</title>
+  <!-- icone da página 
+  <link rel="shortcut icon" href="images/favicon.ico">-->
+  <!-- bootstrap -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+  <!-- font awesome -->
+  <link href="css/font-awesome.min.css" rel="stylesheet">
+  <!-- style.css -->
+  <link rel="stylesheet" type="text/css" href="css/style.css">
+  <!-- fonts do google -->
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700' rel='stylesheet' type='text/css'>
+  
+  <!-- AngularJS -->
+  <script src="js/angular.js"></script>
+  <script src="js/angular-locale_pt-br.js"></script>
+  
+  <!-- app -->
+  <script src="js/app.js"></script>
+  <!-- cotacaoController -->
+  <script src="js/controllers/cotacaoCtrl.js"></script>
+
+
+  <!--[if lt IE 9]>
+    <script src="js/html5shiv.js"></script>
+    <script src="js/respond.min.js"></script>
+  <![endif]-->
+ 
+</head><!--/head-->
+
+<body ng-controller="cotacaoCtrl">
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h1 class="text-center text-success">{{appname}}</h1>
+                <div class="jumbotron">
+                    <form>
+                      <div class="form-group">
+                        <label for="name">Nome</label>
+                        <input type="text" class="form-control" id="name" placeholder="Nome" ng-model="cliente.nome">
+                      </div>    
+                      <div class="form-group">
+                        <label for="email">E-mail</label>
+                        <input type="email" class="form-control" id="email" placeholder="Email" ng-model="cliente.email" >
+                      </div>
+                      <p>Receber por:</p>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" ng-model="cliente.opcao" value="dinheiro">
+                          Dinheiro
+                        </label>
+                      </div>
+                      <div class="radio">
+                        <label>
+                          <input type="radio" ng-model="cliente.opcao" value="creditos">
+                          Créditos (troca)
+                        </label>
+                    </div>
+
+
+                    <div class="row" ng-show="cliente.opcao=='dinheiro'">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="banco">Banco</label>
+                                <input type="text" class="form-control" id="banco" placeholder="Banco" ng-model="cliente.banco">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="agencia">Agência</label>
+                                <input type="text" class="form-control" id="agencia" placeholder="Agência" ng-model="cliente.agencia">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="conta">Conta</label>
+                                <input type="text" class="form-control" id="conta" placeholder="Conta" ng-model="cliente.conta">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label for="cpf">CPF</label>
+                                <input type="text" class="form-control" id="cpf" placeholder="CPF" ng-model="cliente.cpf">
+                            </div>
+                        </div>
+                    </div>
+
+
+                      <!-- Adicionar Jogos -->
+                      <legend class="text-primary margin-top-2x">JOGOS</legend>
+                      <div class="form-inline">
+                        <div class="form-group">
+                            <label for="jogo">Selecione o Jogo</label>
+                            <select class="form-control" id="jogo" ng-model="jogo.nome" ng-options="jogo.fields.nome+' ('+jogo.fields.console+')' for jogo in jogos">
+                              <option value="">Selecione um Jogo</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantidade">Quantidade</label>
+                            <input type="number" class="form-control" id="quantidade" ng-model="jogo.quantidade">
+                        </div>
+                        <a class="btn btn-info margin-left-1x" id="add-item" ng-click="adicionarJogo(jogo)" ng-disabled="!jogo.nome || jogo.quantidade<=0 || !jogo.quantidade"><i class="fa fa-plus"></i> Adicionar Jogo</a>
+                      </div>
+
+                      <!-- Lista de Jogos -->
+                      <table class="table table-striped margin-top-2x">
+                          <thead>
+                            <tr>
+                                <th>Nome do Jogo</th>
+                                <th>Quantidade</th>
+                                <th>Sub-total</th>
+                                <th>Opções</th>
+                            </tr>
+                          </thead>
+                            <tr ng-repeat="jogo in lista_jogos">
+                                <td>{{jogo.nome}}</td>
+                                <td>{{jogo.quantidade}}</td>
+                                <td>{{jogo.subTotal  | currency}}</td>
+                                <td class="text-danger"><a class="btn btn-danger" ng-click="apagarJogo(jogo)">Remover</a></td>
+                            </tr>
+                          <tfoot>
+                            <tr>
+                                <th>Nome do Jogo</th>
+                                <th>Quantidade</th>
+                                <th>Sub-total</th>
+                                <th>Opções</th>
+                            </tr>
+                          </tfoot>
+                          
+                      </table>
+                      <p ng-show="totalGeral">Total: <strong>{{totalGeral | currency}}</strong></p>
+
+                      <a class="btn btn-primary margin-top-2x" ng-click="enviarSolicitacao(cliente, lista_jogos)" ng-disabled="!cliente.nome || !cliente.opcao || !cliente.email || !lista_jogos.length || (cliente.opcao=='dinheiro' && (!cliente.cpf || !cliente.conta || !cliente.banco || !cliente.agencia))">
+                          <i class="fa fa-send"></i>
+                          Enviar Cotação
+                    </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-12 text-center">
+            <p>&copy; 2017 empresa ,. Ltd</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script type="text/javascript" src="js/jquery.js"></script>
+  <script type="text/javascript" src="js/bootstrap.min.js"></script>
+
+</body>
+</html>
